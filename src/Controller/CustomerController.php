@@ -3,89 +3,79 @@
 namespace App\Controller;
 
 use App\Entity\Customer;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use App\Service\APIGenerator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class CustomerController extends AbstractController
 {    
     /**
-     * @Route("/api/customers/{id}", name="customer_show")
-     * @Method({"GET"})
+     * @Rest\Get(
+     *      path = "/api/customers/{id}",
+     *      name = "customer_show",
+     *      requirements = {"id"="\d+"}
+     * )
+     * @Rest\View(serializerGroups={"details"})
      */
-    public function showCustomer(Customer $customer)
+    public function showCustomer(APIGenerator $api, Customer $customer)
     {
-        $data = $this->get('serializer')->serialize($customer, 'json');
-
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $api->showAction($customer);
     }
 
     /**
-     * @Route("/api/customers", name="customer_list")
-     * @Method({"GET"})
+     * @Rest\Get(
+     *      path = "/api/customers",
+     *      name = "customers_list"
+     * )
+     * @Rest\View(serializerGroups={"list"})
      */
-    public function listCustomer()
+    public function listCustomer(APIGenerator $api)
     {
-        $customers = $this->getDoctrine()->getRepository(Customer::class)->findAll();
-        $data = $this->get('serializer')->serialize($customers, 'json');
-
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        $customer = new Customer();
+        $params = ['client' => $this->getUser()];
+        return $api->listAction($customer, $params);
     }
 
     /**
-     * @Route("/api/customers", name="customer_create")
-     * @Method({"POST"})
+     * @Rest\Post(
+     *      path = "/api/customers",
+     *      name = "customers_create"
+     * )
+     * @Rest\View(StatusCode = 201, serializerGroups={"details"})
+     * @ParamConverter("customer", converter="fos_rest.request_body")
      */
-    public function createAction(Request $request)
-    {
-        $data = $request->getContent();
-        $customer = $this->$this->get('serializer')->deserialize($data, 'App\Entity\Customer', 'json');
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($customer);
-        $em->flush();
-
-        return new Response('', Response::HTTP_CREATED);
+    public function createCustomer(APIGenerator $api, Customer $customer)
+    {      
+        return $api->createAction($customer);
     }
 
     /**
-     * @Route("/api/customers/{id}", name="customer_create")
-     * @Method({"PUT","PATCH"})
+     * @Rest\Put(
+     *      path = "/api/customers/{id}",
+     *      name = "customer_update",
+     *      requirements = {"id"="\d+"}
+     * )
+     * @Rest\View(StatusCode = 200, serializerGroups={"details"})
+     * @ParamConverter("customer_change", converter="fos_rest.request_body")
      */
-    public function updateAction(Request $request)
-    {
-        $data = $request->getContent();
-        $customer = $this->$this->get('serializer')->deserialize($data, 'App\Entity\Customer', 'json');
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($customer);
-        $em->flush();
-
-        return new Response();
+    public function updateCustomer(APIGenerator $api, Customer $customer_change, Customer $customer)
+    {       
+        return $api->updateAction($customer_change, $customer);
     }
 
     /**
-     * @Route("/api/customers/{id}", name="customer_delete")
-     * @Method({"DELETE"})
+     * @Rest\Delete(
+     *      path = "/api/customers/{id}",
+     *      name = "customer_delete",
+     *      requirements = {"id"="\d+"}
+     * )
+     * @Rest\View(StatusCode = 204)
      */
-    public function deleteAction()
+    public function deleteCustomer(APIGenerator $api, Customer $customer)
     {
-        $data = $request->getContent();
-        $customer = $this->$this->get('serializer')->deserialize($data, 'App\Entity\Customer', 'json');
-
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($customer);
-        $em->flush();
-
-        return new Response();
-
+        return $api->deleteAction($customer);
     }
 }

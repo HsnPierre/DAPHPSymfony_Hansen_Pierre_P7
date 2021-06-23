@@ -4,9 +4,13 @@ namespace App\Entity;
 
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ * @UniqueEntity(fields="email", message="L'adresse mail est déjà utilisée.")
+ * @UniqueEntity(fields="username", message="Le pseudo est déjà utilisé.")
  */
 class Customer
 {
@@ -14,29 +18,35 @@ class Customer
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"details","list"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"details","list"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"details","list"})
      */
     private $username;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"details"})
      */
     private $client;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Groups({"details","list"})
      */
     private $uri;
+
+    private $type = 'customer';
 
     public function getId(): ?int
     {
@@ -89,5 +99,10 @@ class Customer
         $this->uri = $uri;
 
         return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
     }
 }

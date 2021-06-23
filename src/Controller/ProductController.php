@@ -3,40 +3,38 @@
 namespace App\Controller;
 
 use App\Entity\Product;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use App\Service\APIGenerator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ProductController extends AbstractController
 {    
     /**
-     * @Route("/api/products/{id}", name="product_show")
-     * @Method({"GET"})
+     * @Rest\Get(
+     *      path = "/api/products/{id}",
+     *      name = "product_show",
+     *      requirements = {"id"="\d+"}
+     * )
+     * @Rest\View(serializerGroups={"details"})
      */
-    public function showProduct(Product $product)
+    public function showProduct(APIGenerator $api, Product $product)
     {
-        $data = $this->get('serializer')->serialize($product, 'json');
-
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $api->showAction($product);
     }
 
     /**
-     * @Route("/api/products", name="product_list")
-     * @Method({"GET"})
+     * @Rest\Get(
+     *      path = "/api/products",
+     *      name = "products_list"
+     * )
+     * @Rest\View(serializerGroups={"list"})
      */
-    public function listProduct()
+    public function listProduct(APIGenerator $api)
     {
-        $products = $this->getDoctrine()->getRepository(Product::class)->findAll();
-        $data = $this->get('serializer')->serialize($products, 'json');
-
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        $product = new Product();
+        $params = [];
+        return $api->listAction($product, $params);
     }
 }

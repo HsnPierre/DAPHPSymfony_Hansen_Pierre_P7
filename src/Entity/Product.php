@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
@@ -14,33 +15,40 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"details","list"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"details","list"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"details"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="decimal", precision=10, scale=0)
+     * @Groups({"details"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"details"})
      */
     private $created_at;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Groups({"details","list"})
      */
     private $uri;
+
+    private $type = 'product';
 
     public function __construct()
     {
@@ -110,5 +118,10 @@ class Product
         $this->uri = $uri;
 
         return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
     }
 }
