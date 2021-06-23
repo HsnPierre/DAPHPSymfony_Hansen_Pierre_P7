@@ -1,0 +1,12 @@
+fos_rest:
+  body_converter:
+    enabled: true
+  body_listener: true
+  view:
+    formats: {json: true, xml: false, rss: false}
+    view_response_listener: force
+  serializer:
+    serialize_null: true
+  format_listener:
+    rules:
+      - { path: '^/', priorities: ['json'], fallback_format: 'json' }
