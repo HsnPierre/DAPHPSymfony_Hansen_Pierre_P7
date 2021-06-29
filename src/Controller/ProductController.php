@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Service\APIGenerator;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -31,10 +32,10 @@ class ProductController extends AbstractController
      * )
      * @Rest\View(serializerGroups={"list"})
      */
-    public function listProduct(APIGenerator $api)
+    public function listProduct(APIGenerator $api, Request $request, PaginatorInterface $paginator)
     {
         $product = new Product();
         $params = [];
-        return $api->listAction($product, $params);
+        return $api->listAction($product, $params, $request, $paginator);
     }
 }

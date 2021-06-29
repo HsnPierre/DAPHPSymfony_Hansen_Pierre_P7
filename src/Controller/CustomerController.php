@@ -7,8 +7,10 @@ use App\Service\APIGenerator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Knp\Component\Pager\PaginatorInterface;
 
 class CustomerController extends AbstractController
 {    
@@ -32,11 +34,11 @@ class CustomerController extends AbstractController
      * )
      * @Rest\View(serializerGroups={"list"})
      */
-    public function listCustomer(APIGenerator $api)
+    public function listCustomer(APIGenerator $api, Request $request, PaginatorInterface $paginator)
     {
         $customer = new Customer();
         $params = ['client' => $this->getUser()];
-        return $api->listAction($customer, $params);
+        return $api->listAction($customer, $params, $request, $paginator);
     }
 
     /**
@@ -45,10 +47,19 @@ class CustomerController extends AbstractController
      *      name = "customers_create"
      * )
      * @Rest\View(StatusCode = 201, serializerGroups={"details"})
-     * @ParamConverter("customer", converter="fos_rest.request_body")
+     * @ParamConverter(
+     *      "customer", 
+     *      converter = "fos_rest.request_body"
+     * )
      */
-    public function createCustomer(APIGenerator $api, Customer $customer)
-    {      
+    public function createCustomer(APIGenerator $api, Customer $customer, ConstraintViolationList $violations)
+    {                  
+        if(null !== $violations[0]->getCode())
+        {
+            header("HTTP/1.1 400 Bad Request");
+            exit;
+        }
+        
         return $api->createAction($customer);
     }
 
@@ -61,9 +72,23 @@ class CustomerController extends AbstractController
      * @Rest\View(StatusCode = 200, serializerGroups={"details"})
      * @ParamConverter("customer_change", converter="fos_rest.request_body")
      */
-    public function updateCustomer(APIGenerator $api, Customer $customer_change, Customer $customer)
+    public function updateCustomer(APIGenerator $api, Customer $customer_change, Customer $customer, ConstraintViolationList $violations)
     {       
-        return $api->updateAction($customer_change, $customer);
+        if(null !== $violations[0]->getCode())
+        {
+            header("HTTP/1.1 400 Bad Request");
+            exit;
+        }
+        
+        if($customer->getClient()==$this->getUser())
+        {
+            return $api->updateAction($customer_change, $customer);
+        }
+        else
+        {
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        }
     }
 
     /**
@@ -76,6 +101,14 @@ class CustomerController extends AbstractController
      */
     public function deleteCustomer(APIGenerator $api, Customer $customer)
     {
-        return $api->deleteAction($customer);
+        if($customer->getClient()==$this->getUser())
+        {
+            return $api->deleteAction($customer);
+        }
+        else
+        {
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        }
     }
 }

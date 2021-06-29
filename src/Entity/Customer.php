@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+Use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
- * @UniqueEntity(fields="email", message="L'adresse mail est déjà utilisée.")
- * @UniqueEntity(fields="username", message="Le pseudo est déjà utilisé.")
+ * @UniqueEntity("email")
+ * @UniqueEntity("username")
  */
 class Customer
 {
@@ -23,14 +24,18 @@ class Customer
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Groups({"details","list"})
+     * @Assert\NotBlank
+     * @Assert\Unique
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Groups({"details","list"})
+     * @Assert\NotBlank
+     * @Assert\Unique
      */
     private $username;
 

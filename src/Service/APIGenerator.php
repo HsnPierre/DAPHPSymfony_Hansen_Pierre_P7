@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Knp\Component\Pager\PaginatorInterface;
 
 class APIGenerator extends AbstractController
 {    
@@ -19,7 +20,7 @@ class APIGenerator extends AbstractController
         return $entity;
     }
 
-    public function listAction(Object $entity, array $params)
+    public function listAction(Object $entity, array $params, Request $request, PaginatorInterface $paginator)
     {
         if($entity->getType()=='customer')
         $entities = $this->getDoctrine()->getRepository(Customer::class)->findBy($params);
@@ -30,7 +31,12 @@ class APIGenerator extends AbstractController
         {
             $entity->setUri("/api/".$entity->getType()."s/".$entity->getId());
         }
-        return $entities;
+
+        $page = $_GET['page'];
+
+        $pag_entities = $paginator->paginate($entities, $request->query->getInt('page', $page), $request->query->getInt('limit', 3));
+
+        return $pag_entities;
     }
 
     public function createAction(Object $entity)
@@ -47,8 +53,8 @@ class APIGenerator extends AbstractController
 
     public function updateAction(Object $entity2, Object $entity)
     {       
-        $entity->setEmail($entity2->getEmail()!=null?$entity2->getEmail():$entity->getEmail());
-        $entity->setUsername($entity2->getUsername()!=null?$entity2->getUsername():$entity->getUsername());
+        $entity->setEmail($entity2->getEmail());
+        $entity->setUsername($entity2->getUsername());
 
         $this->getDoctrine()->getManager()->flush();
 
