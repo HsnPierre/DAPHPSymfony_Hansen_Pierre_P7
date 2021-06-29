@@ -54,12 +54,24 @@ class CustomerController extends AbstractController
      */
     public function createCustomer(APIGenerator $api, Customer $customer, ConstraintViolationList $violations)
     {                  
-        if(null !== $violations[0]->getCode())
-        {
-            header("HTTP/1.1 400 Bad Request");
-            exit;
-        }
+        $errors = null;
         
+        foreach($violations as $violation)
+        {
+            if(null !== $violation->getCode())
+            {
+                $error_field = $violation->getPropertyPath();
+                $tmp = json_encode($violation->getConstraint());
+                $error_type = json_decode($tmp, true);
+                $errors[] = 'Exception in the value "'.$error_field.'". '.$error_type['message'];
+            }
+        }
+        if($errors !== null)
+        {
+            $error = json_encode($errors);
+            return new Response($error, Response::HTTP_BAD_REQUEST);
+        }
+
         return $api->createAction($customer);
     }
 
@@ -74,10 +86,22 @@ class CustomerController extends AbstractController
      */
     public function updateCustomer(APIGenerator $api, Customer $customer_change, Customer $customer, ConstraintViolationList $violations)
     {       
-        if(null !== $violations[0]->getCode())
+        $errors = null;
+        
+        foreach($violations as $violation)
         {
-            header("HTTP/1.1 400 Bad Request");
-            exit;
+            if(null !== $violation->getCode() && $violation->getInvalidValue() !== $customer->getEmail() && $violation->getInvalidValue() !== $customer->getUsername())
+            {
+                $error_field = $violation->getPropertyPath();
+                $tmp = json_encode($violation->getConstraint());
+                $error_type = json_decode($tmp, true);
+                $errors[] = 'Exception in the value "'.$error_field.'". '.$error_type['message'];
+            }
+        }
+        if($errors !== null)
+        {
+            $error = json_encode($errors);
+            return new Response($error, Response::HTTP_BAD_REQUEST);
         }
         
         if($customer->getClient()==$this->getUser())
@@ -86,8 +110,7 @@ class CustomerController extends AbstractController
         }
         else
         {
-            header("HTTP/1.1 401 Unauthorized");
-            exit;
+            return new Response(json_encode("You don't have the permission to update this customer"), Response::HTTP_FORBIDDEN);
         }
     }
 
@@ -107,8 +130,7 @@ class CustomerController extends AbstractController
         }
         else
         {
-            header("HTTP/1.1 401 Unauthorized");
-            exit;
+            return new Response(json_encode("You don't have the permission to delete this customer"), Response::HTTP_FORBIDDEN);
         }
     }
 }
