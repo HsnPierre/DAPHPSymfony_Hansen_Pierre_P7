@@ -1,6 +1,8 @@
 fos_rest:
   body_converter:
     enabled: true
+    validate: true
+    validation_errors_argument: violations
   body_listener: true
   view:
     formats: {json: true, xml: false, rss: false}
