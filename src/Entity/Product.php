@@ -23,6 +23,12 @@ class Product
      * @ORM\Column(type="string", length=255)
      * @Groups({"details","list"})
      */
+    private $brand;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"details","list"})
+     */
     private $name;
 
     /**
@@ -60,6 +66,18 @@ class Product
         return $this->id;
     }
 
+    public function getBrand(): ?string
+    {
+        return $this->brand;
+    }
+
+    public function setBrand(string $brand): self
+    {
+        $this->brand = $brand;
+
+        return $this;
+    }
+    
     public function getName(): ?string
     {
         return $this->name;
