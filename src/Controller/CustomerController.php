@@ -4,13 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Service\APIGenerator;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\Exception\ResourceValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Knp\Component\Pager\PaginatorInterface;
 
 class CustomerController extends AbstractController
 {    
@@ -38,7 +39,8 @@ class CustomerController extends AbstractController
     {
         $customer = new Customer();
         $params = ['client' => $this->getUser()];
-        return $api->listAction($customer, $params, $request, $paginator);
+        $limit = 3;
+        return $api->listAction($customer, $params, $request, $paginator, $limit);
     }
 
     /**
@@ -54,7 +56,7 @@ class CustomerController extends AbstractController
      */
     public function createCustomer(APIGenerator $api, Customer $customer, ConstraintViolationList $violations)
     {                  
-        $errors = null;
+        $message = null;
         
         foreach($violations as $violation)
         {
@@ -63,13 +65,12 @@ class CustomerController extends AbstractController
                 $error_field = $violation->getPropertyPath();
                 $tmp = json_encode($violation->getConstraint());
                 $error_type = json_decode($tmp, true);
-                $errors[] = 'Exception in the value "'.$error_field.'". '.$error_type['message'];
+                $message .= 'Exception in the value "'.$error_field.'". '.$error_type['message'].' ';
             }
         }
-        if($errors !== null)
+        if($message !== null)
         {
-            $error = json_encode($errors);
-            return new Response($error, Response::HTTP_BAD_REQUEST);
+            throw new ResourceValidationException($message);
         }
 
         return $api->createAction($customer);

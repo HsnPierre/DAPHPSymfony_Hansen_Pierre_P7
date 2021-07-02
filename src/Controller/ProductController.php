@@ -36,6 +36,10 @@ class ProductController extends AbstractController
     {
         $product = new Product();
         $params = [];
-        return $api->listAction($product, $params, $request, $paginator);
+        $limit = 5;
+        if(!empty($_GET['brand'])){
+            $params = ['brand' => $_GET['brand']];
+        }
+        return $api->listAction($product, $params, $request, $paginator, $limit);
     }
 }

@@ -20,7 +20,7 @@ class APIGenerator extends AbstractController
         return $entity;
     }
 
-    public function listAction(Object $entity, array $params, Request $request, PaginatorInterface $paginator)
+    public function listAction(Object $entity, array $params, Request $request, PaginatorInterface $paginator, int $limit)
     {
         if($entity->getType()=='customer')
         $entities = $this->getDoctrine()->getRepository(Customer::class)->findBy($params);
@@ -32,9 +32,11 @@ class APIGenerator extends AbstractController
             $entity->setUri("/api/".$entity->getType()."s/".$entity->getId());
         }
 
-        $page = $_GET['page'];
+        $page= 1;
+        if(!empty($_GET['page']))
+            $page = $_GET['page'];
 
-        $pag_entities = $paginator->paginate($entities, $request->query->getInt('page', $page), $request->query->getInt('limit', 3));
+        $pag_entities = $paginator->paginate($entities, $request->query->getInt('page', $page), $request->query->getInt('limit', $limit));
 
         return $pag_entities;
     }
