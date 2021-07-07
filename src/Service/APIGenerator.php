@@ -32,9 +32,7 @@ class APIGenerator extends AbstractController
             $entity->setUri("/api/".$entity->getType()."s/".$entity->getId());
         }
 
-        $page= 1;
-        if(!empty($_GET['page']))
-            $page = $_GET['page'];
+        $page = $request->query->get('page') ?? 1;
 
         $pag_entities = $paginator->paginate($entities, $request->query->getInt('page', $page), $request->query->getInt('limit', $limit));
 
