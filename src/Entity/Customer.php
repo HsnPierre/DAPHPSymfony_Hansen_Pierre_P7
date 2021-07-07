@@ -28,6 +28,9 @@ class Customer
      * @Groups({"details","list"})
      * @Assert\NotBlank
      * @Assert\Unique
+     * @Assert\Email(
+     *      message = "This value is not valid."
+     * )
      */
     private $email;
 
