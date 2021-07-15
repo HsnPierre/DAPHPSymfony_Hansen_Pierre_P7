@@ -2,13 +2,16 @@
 
 namespace App\EventListener;
 
+use Error;
 use App\Normalizer\NormalizerInterface;
+use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelEvents;
 use App\Normalizer\NotFoundHttpExceptionNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ApiExceptionSubscriber implements EventSubscriberInterface
 {
@@ -23,15 +26,28 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     {
         $e = $event->getThrowable();
 
-        $result['code'] = $e->getStatusCode();
-        $result['body'] = [
-            'code' => $e->getStatusCode(),
-            'message' => $e->getMessage()
-        ];
+        if(!($e instanceof HttpKernel)){
+            $result['code'] = 500;
+            $result['body'] = [
+                'code' => 500,
+                'message' => $e->getRawMessage()
+            ];
 
-        $body = $this->serializer->serialize($result['body'], 'json');
+            $body = $this->serializer->serialize($result['body'], 'json');
 
-        $event->setResponse(new Response($body, $result['code']));
+            $event->setResponse(new Response($body, $result['code']));
+        }
+        if($e instanceof HttpExceptionInterface){
+            $result['code'] = $e->getStatusCode();
+            $result['body'] = [
+                'code' => $e->getStatusCode(),
+                'message' => $e->getMessage()
+            ];
+
+            $body = $this->serializer->serialize($result['body'], 'json');
+
+            $event->setResponse(new Response($body, $result['code']));
+        }        
     }
 
     public static function getSubscribedEvents()
