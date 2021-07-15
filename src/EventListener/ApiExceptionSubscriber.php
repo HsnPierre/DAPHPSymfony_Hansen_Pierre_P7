@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use Error;
+use ErrorException;
 use App\Normalizer\NormalizerInterface;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 class ApiExceptionSubscriber implements EventSubscriberInterface
 {
@@ -25,12 +26,11 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     public function onKernelException(ExceptionEvent $event)
     {
         $e = $event->getThrowable();
-
-        if(!($e instanceof HttpKernel)){
+        if($e instanceof ErrorException){
             $result['code'] = 500;
             $result['body'] = [
                 'code' => 500,
-                'message' => $e->getRawMessage()
+                'message' => $e->getMessage()
             ];
 
             $body = $this->serializer->serialize($result['body'], 'json');
