@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class APIController extends AbstractController
 {
     /**
-     * @Route("/api/documentation")
+     * @Route("/documentation")
      */
     public function index()
     {
