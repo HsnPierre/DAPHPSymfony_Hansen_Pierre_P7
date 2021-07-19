@@ -12,5 +12,5 @@ fos_rest:
   format_listener:
     rules:
       - { path: '^/documentation', priorities: ['html', 'text/css'], fallback_format: 'text/plain'}
-      - { path: '^/api/products/', priorities: ['json'], fallback_format: 'json' }
+      - { path: '^/api/products', priorities: ['json'], fallback_format: 'json' }
       - { path: '^/api/customers', priorities: ['json'], fallback_format: 'json' }
