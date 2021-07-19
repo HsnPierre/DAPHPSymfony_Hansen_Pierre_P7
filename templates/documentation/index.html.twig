@@ -1,0 +1,466 @@
+{% extends 'base.html.twig' %}
+
+{% block body_id 'documentation' %}
+
+{% block body %}
+
+    <div class="menu">
+        <ul>
+            <li>
+                <a href="#auth"><h3>Authentification</h3></a>
+            </li>
+            <li>
+                <a href="#product"><h3>Product</h3></a>
+                <ul>
+                    <li>
+                        <a href="#collection_products">Products list</a>
+                    </li>
+                    <li>
+                        <a href="#ressources_product">Product ressources</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#customers"><h3>Customer</h3></a>
+                <ul>
+                    <li>
+                        <a href="#collection_customers">Customers list</a>
+                    </li>
+                    <li>
+                        <a href="#ressources_customer">Customer ressources</a>
+                    </li>
+                    <li>
+                        <a href="#create_customer">Create customer</a>
+                    </li>
+                    <li>
+                        <a href="#update_customer">Update customer</a>
+                    </li>
+                    <li>
+                        <a href="#delete_customer">Delete customer</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <section id="main">
+        <div class="container text-center">
+            <h1 class="text-center">BileMO</h1>
+            <hr>
+            <p>API designed for phones catalog and customers management.</p>
+        </div>
+    </section>
+
+    <section id="auth">
+
+        <div id="user_auth" class="container">
+            <h2>Authentification</h2>
+            <p>Access the API by authentification, to process, provide your mail and your password. Then, you have to use the returned token for each of the next requests. In the software you use, put the token in "Authorization", "Bearer Token".</p>
+            <div class="alert alert-secondary row">
+                <h3 id="http_post" class="col-1">POST</h3>
+                <h3 class="col-auto">/api/login_check</h3>
+                <button type="button" class="btn btn-outline-secondary" onclick="hideshow('auth_div')">Show</button>
+            </div>
+            <div class="hidden" id="auth_div">
+                <h4>Parameters</h4>
+                <p>The differents parameters to put in the body</p>
+                <div class="container" id="code">
+                    <p>{</p><ul>
+                        <li>
+                            <div class="row"><p>"username": "[value]"</p></div>
+                            <p id="green">// The value can't be null, the mail format must be respected.</p>
+                            <div class="row"><p>"password": "[value]"</p></div>
+                            <p id="green">// The value can't be null, the password must be valid.</p>
+                        </li>
+                    </ul><p>}</p>
+                </div>
+                <h4>Examples</h4>
+                <span>Body:</span>
+                <div class="container" id="code">
+                    <p>{</p><ul>
+                        <li>
+                            <p>"username": "example@bilemo.com"</p>
+                            <p>"password": "example_password"</p>
+                        </li>
+                    </ul><p>}</p>
+                </div>
+                <span>Response:</span>
+                <div class="container" id="code">
+                    <div class="row" id="status"><p>Status: </p><p id="green"> 200 OK</p></div>
+                    <p>{</p><ul>
+                        <li>
+                            <div class="row"><p>"token":</p><p>"eyJ0eXAiOiJKV1QiLCJ[...]"</p></div>
+                        </li>
+                    </ul><p>}</p>
+                </div>
+            </div>
+        </div>
+    
+    </section>
+
+    <hr>
+    
+    <section id="products">
+        <div id="product" class="container">
+            <h2>Products</h2>
+            <p>The differents methods to access the products, display the collection by page or by brand and the resources by id.</p>
+            <div id="collection_products">
+                <div class="alert alert-secondary row">
+                    <h3 id="http_get" class="col-1">GET</h3>
+                    <h3 class="col-auto">/api/products</h3>
+                    <p id="desc">Display the products collection</p>
+                    <button type="button" class="btn btn-outline-secondary" onclick="hideshow('listproduct_div')">Show</button>
+                </div>
+                <div class="hidden" id="listproduct_div">
+                    <h4>Parameters</h4>
+                    <p>The differents parameters to put in the URI</p>
+                    <ul>
+                        <li>[...]/api/products?page={numero}</li>
+                        <li>[...]/api/products?brand={brand}</li>
+                    </ul>
+                    <h4>Examples</h4>
+                    <div class="row"><p id="examples">Pagination </p><p> /api/products?page=3</p></div>
+                    <span>Response:</span>
+                    <div class="container" id="code">
+                        <div class="row" id="status"><p>Status: </p><p id="green"> 200 OK</p></div>
+                        <p>[</p><ul>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"11"</p></div>
+                                        <div class="row"><p>"brand":</p><p>"Xiaomi"</p></div>
+                                        <div class="row"><p>"name":</p><p>"Mi 10T Pro"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/products/11"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"12"</p></div>
+                                        <div class="row"><p>"brand":</p><p>"Huawei"</p></div>
+                                        <div class="row"><p>"name":</p><p>"Mate 40 pro"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/products/12"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"13"</p></div>
+                                        <div class="row"><p>"brand":</p><p>"Huawei"</p></div>
+                                        <div class="row"><p>"name":</p><p>"P40 pro"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/products/13"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"14"</p></div>
+                                        <div class="row"><p>"brand":</p><p>"Huawei"</p></div>
+                                        <div class="row"><p>"name":</p><p>"P40"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/products/14"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"15"</p></div>
+                                        <div class="row"><p>"brand":</p><p>"Sony"</p></div>
+                                        <div class="row"><p>"name":</p><p>"Xperia 1 III"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/products/15"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                        </ul><p>]</p>
+                    </div>
+                    <div class="row"><p id="examples">By brand </p><p> /api/products?brand=Xiaomi</p></div>
+                    <span>Response:</span>
+                    <div class="container" id="code">
+                        <div class="row" id="status"><p>Status: </p><p id="green"> 200 OK</p></div>
+                        <p>[</p><ul>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"9"</p></div>
+                                        <div class="row"><p>"brand":</p><p>"Xiaomi"</p></div>
+                                        <div class="row"><p>"name":</p><p>"Mi 11i 5G"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/products/9"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"10"</p></div>
+                                        <div class="row"><p>"brand":</p><p>"Xiaomi"</p></div>
+                                        <div class="row"><p>"name":</p><p>"Mi 11 Ultra"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/products/10"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"11"</p></div>
+                                        <div class="row"><p>"brand":</p><p>"Xiaomi"</p></div>
+                                        <div class="row"><p>"name":</p><p>"Mi 10T Pro"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/products/11"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                        </ul><p>]</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ressources_product">
+                <div class="alert alert-secondary row">
+                    <h3 id="http_get" class="col-1">GET</h3>
+                    <h3 class="col-auto">/api/products/{id}</h3>
+                    <p id="desc">Display one product ressource</p>
+                    <button type="button" class="btn btn-outline-secondary" onclick="hideshow('resproduct_div')">Show</button>
+                </div>
+                <div class="hidden" id="resproduct_div">
+                    <h4>Examples</h4>
+                    <p> /api/products/1</p>
+                    <span>Response:</span>
+                    <div class="container" id="code">
+                        <div class="row" id="status"><p>Status: </p><p id="green"> 200 OK</p></div>
+                        <p>{</p><ul>
+                            <li>
+                                <div class="row"><p>"id":</p><p>"1"</p></div>
+                                <div class="row"><p>"brand":</p><p>"Apple"</p></div>
+                                <div class="row"><p>"name":</p><p>"iPhone 12"</p></div>
+                                <div class="row"><p>"description":</p><p>"La vitesse 5G. Une puce A14 Bionic, la plus rapide sur smartphone. Un écran OLED bord à bord. Le Ceramic Shield, qui multiplie par quatre la résistance aux chutes. Et le mode Nuit sur chaque appareil photo. L’iPhone 12 a tout, en deux tailles parfaites."</p></div>
+                                <div class="row"><p>"price":</p><p>"809"</p></div>
+                                <div class="row"><p>"created_at":</p><p>"2020-12-01T02:59:31+01:00"</p></div>
+                                <div class="row"><p>"uri":</p><p>"/api/products/1"</p></div>
+                            </li>
+                        </ul><p>}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr>
+
+    <section id="customers">
+        <div id="customer" class="container">
+            <h2>Customers</h2>
+            <p>The differents methods to use for the customers, first to display by collection or resources. Then to create a new customer, update and delete existing ones.</p>
+            <div id="collection_customers">
+                <div class="alert alert-secondary row">
+                    <h3 id="http_get" class="col-1">GET</h3>
+                    <h3 class="col-auto">/api/customers</h3>
+                    <p id="desc">Display the customers collection for the authenticated user.</p>
+                    <button type="button" class="btn btn-outline-secondary" onclick="hideshow('listcustomer_div')">Show</button>
+                </div>
+                <div class="hidden" id="listcustomer_div">
+                    <h4>Parameters</h4>
+                    <p>The differents parameters to put in the URI</p>
+                    <ul>
+                        <li>[...]/api/products?page={numero}</li>
+                    </ul>
+                    <h4>Examples</h4>
+                    <div class="row"><p id="examples">Pagination </p><p> /api/customers?page=1</p></div>
+                    <span>Response:</span>
+                    <div class="container" id="code">
+                        <div class="row" id="status"><p>Status: </p><p id="green"> 200 OK</p></div>
+                        <p>[</p><ul>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"4"</p></div>
+                                        <div class="row"><p>"email":</p><p>"dare.kim@example.com"</p></div>
+                                        <div class="row"><p>"username":</p><p>"yost.vada"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/customers/4"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"6"</p></div>
+                                        <div class="row"><p>"email":</p><p>"uweber@example.org"</p></div>
+                                        <div class="row"><p>"username":</p><p>"fahey.gisselle"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/customers/6"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                            <li>
+                                <p>{</p><ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p>"12"</p></div>
+                                        <div class="row"><p>"email":</p><p>"kale03@example.org"</p></div>
+                                        <div class="row"><p>"username":</p><p>"gaetano11"</p></div>
+                                        <div class="row"><p>"uri":</p><p>"/api/customers/12"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                            </li>
+                        </ul><p>]</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ressources_customer">
+                <div class="alert alert-secondary row">
+                    <h3 id="http_get" class="col-1">GET</h3>
+                    <h3 class="col-auto">/api/customers/{id}</h3>
+                    <p id="desc">Display one customer by id</p>
+                    <button type="button" class="btn btn-outline-secondary" onclick="hideshow('rescustomer_div')">Show</button>
+                </div>
+                <div class="hidden" id="rescustomer_div">
+                    <h4>Examples</h4>
+                    <p> /api/customers/1</p>
+                    <span>Response:</span>
+                    <div class="container" id="code">
+                        <div class="row" id="status"><p>Status: </p><p id="green"> 200 OK</p></div>
+                        <p>{</p><ul>
+                            <li>
+                                <div class="row"><p>"id":</p><p> "1"</p></div>
+                                <div class="row"><p>"email":</p><p> "freda.smitham@example.com"</p></div>
+                                <div class="row"><p>"username":</p><p> "everett.towne"</p></div>
+                                <div class="row"><p>"client":</p><p> {</p></div>
+                                <ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p> "2"</p></div>
+                                        <div class="row"><p>"email":</p><p> "hermann.kiarra@example.com"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                                <div class="row"><p>"uri":</p><p>"/api/customers/1"</p></div>
+                            </li>
+                        </ul><p>}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="create_customer">
+                <div class="alert alert-secondary row">
+                    <h3 id="http_post" class="col-1">POST</h3>
+                    <h3 class="col-auto">/api/customers</h3>
+                    <p id="desc">Create a new customer</p>
+                    <button type="button" class="btn btn-outline-secondary" onclick="hideshow('createcus_div')">Show</button>
+                </div>
+                <div class="hidden" id="createcus_div">
+                    <h4>Parameters</h4>
+                    <p>The differents parameters to put in the body</p>
+                    <div class="container" id="code">
+                        <p>{</p><ul>
+                            <li>
+                                <div class="row"><p>"username": "[value]"</p></div>
+                                <p id="green">// The value can't be null, the username must be unique.</p>
+                                <div class="row"><p>"email": "[value]"</p></div>
+                                <p id="green">// The value can't be null, the adress mail must be valid and unique.</p>
+                            </li>
+                        </ul><p>}</p>
+                    </div>
+                    <h4>Examples</h4>
+                    <span>Body:</span>
+                    <div class="container" id="code">
+                        <p>{</p><ul>
+                            <li>
+                                <p>"username": "example"</p>
+                                <p>"email": "example@bilemo.com"</p>
+                            </li>
+                        </ul><p>}</p>
+                    </div>
+                    <span>Response:</span>
+                    <div class="container" id="code">
+                        <div class="row" id="status"><p>Status: </p><p id="green"> 201 Created</p></div>
+                        <p>{</p><ul>
+                            <li>
+                                <div class="row"><p>"id":</p><p> "16"</p></div>
+                                <div class="row"><p>"email":</p><p> "example@bilemo.com"</p></div>
+                                <div class="row"><p>"username":</p><p> "example"</p></div>
+                                <div class="row"><p>"client":</p><p> {</p></div>
+                                <ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p> "{id of the logged user}"</p></div>
+                                        <div class="row"><p>"email":</p><p> "{email of the logged user}"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                                <div class="row"><p>"uri":</p><p>"/api/customers/16"</p></div>
+                            </li>
+                        </ul><p>}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="update_customer">
+                <div class="alert alert-secondary row">
+                    <h3 id="http_update" class="col-1">PUT</h3>
+                    <h3 class="col-auto">/api/customers/{id}</h3>
+                    <p id="desc">Update an existing customer link to the autenthicated user.</p>
+                    <button type="button" class="btn btn-outline-secondary" onclick="hideshow('updatecus_div')">Show</button>
+                </div>
+                <div class="hidden" id="updatecus_div">
+                    <h4>Parameters</h4>
+                    <p>The differents parameters to put in the body</p>
+                    <div class="container" id="code">
+                        <p>{</p><ul>
+                            <li>
+                                <div class="row"><p>"username": "[value]"</p></div>
+                                <p id="green">// The value can't be null, the username must be unique.</p>
+                                <div class="row"><p>"email": "[value]"</p></div>
+                                <p id="green">// The value can't be null, the adress mail must be valid and unique.</p>
+                            </li>
+                        </ul><p>}</p>
+                    </div>
+                    <h4>Examples</h4>
+                    <p>/api/customers/1</p>
+                    <span>Body:</span>
+                    <div class="container" id="code">
+                        <p>{</p><ul>
+                            <li>
+                                <p>"username": "example"</p>
+                                <p>"email": "example@bilemo.com"</p>
+                            </li>
+                        </ul><p>}</p>
+                    </div>
+                    <span>Response:</span>
+                    <div class="container" id="code">
+                        <div class="row" id="status"><p>Status: </p><p id="green"> 200 OK</p></div>
+                        <p>{</p><ul>
+                            <li>
+                                <div class="row"><p>"id":</p><p> "1"</p></div>
+                                <div class="row"><p>"email":</p><p> "example@bilemo.com"</p></div>
+                                <div class="row"><p>"username":</p><p> "example"</p></div>
+                                <div class="row"><p>"client":</p><p> {</p></div>
+                                <ul>
+                                    <li>
+                                        <div class="row"><p>"id":</p><p> "{id of the logged user}"</p></div>
+                                        <div class="row"><p>"email":</p><p> "{email of the logged user}"</p></div>
+                                    </li>
+                                </ul><p>}</p>
+                                <div class="row"><p>"uri":</p><p>"/api/customers/1"</p></div>
+                            </li>
+                        </ul><p>}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="delete_customer">
+                <div class="alert alert-secondary row">
+                    <h3 id="http_delete" class="col-1">DELETE</h3>
+                    <h3 class="col-auto">/api/customers/{id}</h3>
+                    <p id="desc">Delete an existing customer link to the autenthicated user.</p>
+                    <button type="button" class="btn btn-outline-secondary" onclick="hideshow('deletecus_div')">Show</button>
+                </div>
+                <div class="hidden" id="deletecus_div">
+                    <h4>Examples</h4>
+                    <p>/api/customers/1</p>
+                    <span>Response:</span>
+                    <div class="container" id="code">
+                        <div class="row" id="status"><p>Status: </p><p id="green"> 204 No Content</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+{% endblock %}
