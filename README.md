@@ -25,5 +25,3 @@ A noter que le mot de passe pour les utilisateurs générés est "motdepasse".
 Démarrez le micro-serveur à l'aide de la commande "symfony server:start -d".
 
 Pour accéder aux différentes ressources et collections, utilisez "/documentation" afin d'y retrouver les différentes URI et leur utilisation.
-
-
