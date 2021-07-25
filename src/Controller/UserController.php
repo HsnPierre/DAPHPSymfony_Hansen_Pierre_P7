@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Customer;
+use App\Entity\User;
 use App\Service\APIGenerator;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,48 +14,48 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class CustomerController extends AbstractController
+class UserController extends AbstractController
 {    
     /**
      * @Rest\Get(
-     *      path = "/api/customers/{id}",
-     *      name = "customer_show",
+     *      path = "/api/users/{id}",
+     *      name = "user_show",
      *      requirements = {"id"="\d+"}
      * )
      * @Rest\View(serializerGroups={"details"})
      */
-    public function showCustomer(APIGenerator $api, Customer $customer)
+    public function showUser(APIGenerator $api, User $user)
     {
-        return $api->showAction($customer);
+        return $api->showAction($user);
     }
 
     /**
      * @Rest\Get(
-     *      path = "/api/customers",
-     *      name = "customers_list"
+     *      path = "/api/users",
+     *      name = "users_list"
      * )
      * @Rest\View(serializerGroups={"list"})
      */
-    public function listCustomer(APIGenerator $api, Request $request, PaginatorInterface $paginator)
+    public function listUser(APIGenerator $api, Request $request, PaginatorInterface $paginator)
     {
-        $customer = new Customer();
+        $user = new User();
         $params = ['client' => $this->getUser()];
         $limit = 3;
-        return $api->listAction($customer, $params, $request, $paginator, $limit);
+        return $api->listAction($user, $params, $request, $paginator, $limit);
     }
 
     /**
      * @Rest\Post(
-     *      path = "/api/customers",
-     *      name = "customers_create"
+     *      path = "/api/users",
+     *      name = "users_create"
      * )
      * @Rest\View(StatusCode = 201, serializerGroups={"details"})
      * @ParamConverter(
-     *      "customer", 
+     *      "user", 
      *      converter = "fos_rest.request_body"
      * )
      */
-    public function createCustomer(APIGenerator $api, Customer $customer, ConstraintViolationList $violations)
+    public function createUser(APIGenerator $api, User $user, ConstraintViolationList $violations)
     {                  
         $message = null;
         
@@ -74,25 +74,25 @@ class CustomerController extends AbstractController
             return new JsonResponse(['code' => 400,'message' => $message], 400);
         }
 
-        return $api->createAction($customer);
+        return $api->createAction($user);
     }
 
     /**
      * @Rest\Put(
-     *      path = "/api/customers/{id}",
-     *      name = "customer_update",
+     *      path = "/api/users/{id}",
+     *      name = "user_update",
      *      requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 200, serializerGroups={"details"})
-     * @ParamConverter("customer_change", converter="fos_rest.request_body")
+     * @ParamConverter("user_change", converter="fos_rest.request_body")
      */
-    public function updateCustomer(APIGenerator $api, Customer $customer_change, Customer $customer, ConstraintViolationList $violations)
+    public function updateUser(APIGenerator $api, User $user_change, User $user, ConstraintViolationList $violations)
     {       
         $message = null;
         
         foreach($violations as $violation)
         {
-            if(null !== $violation->getCode() && $violation->getInvalidValue() !== $customer->getEmail() && $violation->getInvalidValue() !== $customer->getUsername())
+            if(null !== $violation->getCode() && $violation->getInvalidValue() !== $user->getEmail() && $violation->getInvalidValue() !== $user->getUsername())
             {
                 $error_field = $violation->getPropertyPath();
                 $tmp = json_encode($violation->getConstraint());
@@ -105,33 +105,33 @@ class CustomerController extends AbstractController
             return new JsonResponse(['code' => 400,'message' => $message], 400);
         }
         
-        if($customer->getClient()==$this->getUser())
+        if($user->getClient()==$this->getUser())
         {
-            return $api->updateAction($customer_change, $customer);
+            return $api->updateAction($user_change, $user);
         }
         else
         {
-            return new JsonResponse(['code' => 403,'message' => "You don't have the permission to access this customer"], 403);
+            return new JsonResponse(['code' => 403,'message' => "You don't have the permission to access this user"], 403);
         }
     }
 
     /**
      * @Rest\Delete(
-     *      path = "/api/customers/{id}",
-     *      name = "customer_delete",
+     *      path = "/api/users/{id}",
+     *      name = "user_delete",
      *      requirements = {"id"="\d+"}
      * )
      * @Rest\View(StatusCode = 204)
      */
-    public function deleteCustomer(APIGenerator $api, Customer $customer)
+    public function deleteUser(APIGenerator $api, User $user)
     {
-        if($customer->getClient()==$this->getUser())
+        if($user->getClient()==$this->getUser())
         {
-            return $api->deleteAction($customer);
+            return $api->deleteAction($user);
         }
         else
         {
-            return new JsonResponse(['code' => 403,'message' => "You don't have the permission to access this customer"], 403);
+            return new JsonResponse(['code' => 403,'message' => "You don't have the permission to access this user"], 403);
         }
     }
 }

@@ -1,16 +1,11 @@
 security:
     encoders:
-        App\Entity\User:
-            algorithm: auto
-
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
-    encoders:
-        App\Entity\User:
+        App\Entity\Client:
             algorithm: auto
     providers:
         api_users_provider:
             entity:
-                class: App\Entity\User
+                class: App\Entity\Client
                 property: email
     firewalls:
         dev:
@@ -24,8 +19,8 @@ security:
                 check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-        customers:
-            pattern: ^/api/customers
+        users:
+            pattern: ^/api/users
             stateless: true
             guard:
                 authenticators:
@@ -51,5 +46,5 @@ security:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/customers, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/users, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/products, roles: IS_AUTHENTICATED_FULLY }

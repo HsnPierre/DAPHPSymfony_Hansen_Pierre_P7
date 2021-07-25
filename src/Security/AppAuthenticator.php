@@ -2,7 +2,7 @@
 
 namespace App\Security;
 
-use App\Entity\User;
+use App\Entity\Client;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,13 +63,13 @@ class AppAuthenticator extends AbstractFormLoginAuthenticator
             throw new InvalidCsrfTokenException();
         }
 
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $credentials['email']]);
+        $client = $this->entityManager->getRepository(Client::class)->findOneBy(['email' => $credentials['email']]);
 
-        if (!$user) {
+        if (!$client) {
             throw new UsernameNotFoundException('Email could not be found.');
         }
 
-        return $user;
+        return $client;
     }
 
     public function checkCredentials($credentials, UserInterface $user)
