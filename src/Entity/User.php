@@ -4,15 +4,16 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+Use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity("email")
+ * @UniqueEntity("username")
  */
-class User implements UserInterface
+class User
 {
     /**
      * @ORM\Id
@@ -23,31 +24,37 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Groups({"details","list"})
+     * @Assert\NotBlank
+     * @Assert\Unique
+     * @Assert\Email(
+     *      message = "This value is not valid."
+     * )
      */
     private $email;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups({"details","list"})
+     * @Assert\NotBlank
+     * @Assert\Unique
      */
-    private $roles = [];
+    private $username;
 
     /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
+     * @ORM\ManyToOne(targetEntity=Client::class, inversedBy="customers")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"details"})
      */
-    private $password;
+    private $client;
 
     /**
-     * @ORM\OneToMany(targetEntity=Customer::class, mappedBy="client")
+     * @Groups({"details","list"})
      */
-    private $customers;
+    private $uri;
 
-    public function __construct()
-    {
-        $this->customers = new ArrayCollection();
-    }
+    private $type = 'customer';
 
     public function getId(): ?int
     {
@@ -66,97 +73,44 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
-        return (string) $this->email;
+        return $this->username;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
+    public function setUsername(string $username): self
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
+        $this->username = $username;
 
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getPassword(): ?string
+    public function getClient(): ?Client
     {
-        return $this->password;
+        return $this->client;
     }
 
-    public function setPassword(string $password): self
+    public function setClient(?Client $client): self
     {
-        $this->password = $password;
+        $this->client = $client;
 
         return $this;
     }
 
-    /**
-     * Returning a salt is only needed, if you are not using a modern
-     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
-     *
-     * @see UserInterface
-     */
-    public function getSalt(): ?string
+    public function getUri(): ?string
     {
-        return null;
+        return $this->uri;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials()
+    public function setUri(string $uri): self
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
-    /**
-     * @return Collection|Customer[]
-     */
-    public function getCustomers(): Collection
-    {
-        return $this->customers;
-    }
-
-    public function addCustomer(Customer $customer): self
-    {
-        if (!$this->customers->contains($customer)) {
-            $this->customers[] = $customer;
-            $customer->setClient($this);
-        }
+        $this->uri = $uri;
 
         return $this;
     }
 
-    public function removeCustomer(Customer $customer): self
+    public function getType(): ?string
     {
-        if ($this->customers->removeElement($customer)) {
-            // set the owning side to null (unless already changed)
-            if ($customer->getClient() === $this) {
-                $customer->setClient(null);
-            }
-        }
-
-        return $this;
+        return $this->type;
     }
 }

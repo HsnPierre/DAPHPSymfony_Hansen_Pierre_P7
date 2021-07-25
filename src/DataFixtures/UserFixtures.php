@@ -4,28 +4,34 @@ namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use App\DataFixtures\ClientFixtures;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use App\Entity\User;
 use Faker;
 
-class UserFixtures extends Fixture
+class UserFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
-        $tmp_password = 'motdepasse';
         $faker = Faker\Factory::create();
         
-        for($i = 0; $i < 5; $i++){
+        for($i = 0; $i < 15; $i++){
             $user = new User();
-            $user_reference = 'user-'.$i;
 
             $user->setEmail($faker->safeEmail());
-            $user->setPassword(password_hash($tmp_password, PASSWORD_BCRYPT));
-
-            $this->addReference($user_reference, $user);
+            $user->setUsername($faker->userName());
+            $user->setClient($this->getReference('client-'.rand(0,4)));
 
             $manager->persist($user);
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies()
+    {
+        return array(
+            ClientFixtures::class,
+        );
     }
 }
