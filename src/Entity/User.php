@@ -54,7 +54,7 @@ class User
      */
     private $uri;
 
-    private $type = 'customer';
+    private $type = 'user';
 
     public function getId(): ?int
     {
