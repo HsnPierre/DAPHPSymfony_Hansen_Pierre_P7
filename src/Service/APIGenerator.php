@@ -22,7 +22,7 @@ class APIGenerator extends AbstractController
 
     public function listAction(Object $entity, array $params, Request $request, PaginatorInterface $paginator, int $limit)
     {
-        if($entity->getType()=='customer')
+        if($entity->getType()=='user')
         $entities = $this->getDoctrine()->getRepository(User::class)->findBy($params);
         else
         $entities = $this->getDoctrine()->getRepository(Product::class)->findBy($params);
